@@ -15,10 +15,13 @@ def _desmos_embed(expressions: list[dict], width: int, height: int) -> str:
     """Build an isolated HTML document containing an interactive Desmos graph."""
     # The documented public demo key keeps the feature usable out of the box.
     # Set DESMOS_API_KEY (or Streamlit secret) to use a personal API key.
+    api_key = os.getenv("DESMOS_API_KEY")
     try:
-        api_key = st.secrets["DESMOS_API_KEY"]
-    except (KeyError, FileNotFoundError):
-        api_key = os.getenv("DESMOS_API_KEY", "dcb31709b452b1cf9dc26972add0fda6")
+        api_key = api_key or st.secrets.get("DESMOS_API_KEY")
+    except Exception:
+        # Streamlit raises when no secrets file is configured.
+        pass
+    api_key = api_key or "dcb31709b452b1cf9dc26972add0fda6"
 
     safe_key = html.escape(str(api_key), quote=True)
     expression_json = json.dumps(expressions).replace("<", "\\u003c")
