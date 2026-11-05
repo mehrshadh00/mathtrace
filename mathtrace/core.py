@@ -5,7 +5,6 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 import numpy as np
-
 from PIL import Image, ImageOps
 
 @dataclass
