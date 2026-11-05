@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import streamlit.components.v1 as components
 from PIL import Image
+from streamlit.errors import StreamlitSecretNotFoundError
 
 from mathtrace.core import equation_text, render_svg, trace_image
 from mathtrace.desmos import build_desmos_expressions
@@ -18,8 +19,8 @@ def _desmos_embed(expressions: list[dict], width: int, height: int) -> str:
     api_key = os.getenv("DESMOS_API_KEY")
     try:
         api_key = api_key or st.secrets.get("DESMOS_API_KEY")
-    except Exception:
-        # Streamlit raises when no secrets file is configured.
+    except (KeyError, StreamlitSecretNotFoundError):
+        # Fall back when no secrets file or API key is configured.
         pass
     api_key = api_key or "dcb31709b452b1cf9dc26972add0fda6"
 
