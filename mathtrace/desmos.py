@@ -11,7 +11,7 @@ def _number(value: float) -> str:
     return f"{number:.10g}"
 
 
-def build_desmos_expressions(equations: list[dict]) -> list[dict[str, str]]:
+def build_desmos_expressions(equations: list[dict]) -> list[dict]:
     """Convert complex Fourier coefficients into Desmos parametric curves.
 
     MathTrace stores z(t) = sum c_k * exp(i * 2*pi*k*t), where c_k = a + bi.
@@ -19,7 +19,7 @@ def build_desmos_expressions(equations: list[dict]) -> list[dict[str, str]]:
     y(t) = sum(a*sin(theta) + b*cos(theta)). Negate y to preserve image
     orientation because pixel coordinates grow downwards.
     """
-    expressions: list[dict[str, str]] = []
+    expressions: list[dict] = []
 
     for item in equations:
         x_terms: list[str] = []
@@ -45,11 +45,9 @@ def build_desmos_expressions(equations: list[dict]) -> list[dict[str, str]]:
         contour_id = int(item.get("contour", len(expressions)))
         expressions.append(
             {
-                "id": f"mathtrace-contour-{contour_id}",
-                "latex": (
-                    f"\\left({'+'.join(x_terms)},{'+'.join(y_terms)}\\right)"
-                    r"\left\{0\le t\le1\right\}"
-                ),
+                "id": f"mathtrace_contour_{contour_id}",
+                "latex": f"\\left({'+'.join(x_terms)},{'+'.join(y_terms)}\\right)",
+                "parametricDomain": {"min": "0", "max": "1"},
             }
         )
 
