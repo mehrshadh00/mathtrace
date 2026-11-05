@@ -1,7 +1,9 @@
 import json
+
 import matplotlib.pyplot as plt
 import streamlit as st
 from PIL import Image
+
 from mathtrace.core import equation_text, render_svg, trace_image
 
 st.set_page_config(page_title="MathTrace", page_icon="∑", layout="wide")
