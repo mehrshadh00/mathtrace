@@ -60,10 +60,10 @@ def test_desmos_export_converts_complex_fourier_terms():
     expressions = build_desmos_expressions(equations)
 
     assert len(expressions) == 1
-    assert expressions[0]["id"] == "mathtrace-contour-7"
+    assert expressions[0]["id"] == "mathtrace_contour_7"
     assert "\\cos" in expressions[0]["latex"]
     assert "\\sin" in expressions[0]["latex"]
-    assert "0\\le t\\le1" in expressions[0]["latex"]
+    assert expressions[0]["parametricDomain"] == {"min": "0", "max": "1"}
     assert "(-(" in expressions[0]["latex"]
 
 
