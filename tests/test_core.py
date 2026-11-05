@@ -1,8 +1,8 @@
 import numpy as np
-
 from PIL import Image, ImageDraw
 
 from mathtrace.core import equation_text, fourier_reconstruct, render_svg, trace_image
+
 
 def test_fourier_reconstructs_circle():
     t = np.linspace(0, 2*np.pi, 400, endpoint=False)
