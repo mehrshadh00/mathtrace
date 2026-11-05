@@ -2,6 +2,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 from mathtrace.core import equation_text, fourier_reconstruct, render_svg, trace_image
+from mathtrace.desmos import build_desmos_expressions
 
 
 def test_fourier_reconstructs_circle():
@@ -12,6 +13,7 @@ def test_fourier_reconstructs_circle():
     assert np.isfinite(curve).all()
     assert np.count_nonzero(np.abs(coeffs) > 1e-8) <= 17
 
+
 def test_trace_and_exports():
     image = Image.new("RGB", (240, 240), "white")
     draw = ImageDraw.Draw(image)
@@ -21,12 +23,14 @@ def test_trace_and_exports():
     assert "z(t)" in equation_text(result.equations)
     assert "<svg" in render_svg(result.reconstructed, 240, 240)
 
+
 def test_face_focus_fallback():
     image = Image.new("RGB", (240, 240), "white")
     ImageDraw.Draw(image).rectangle((30, 30, 210, 210), outline="black", width=5)
     result = trace_image(image, harmonics=8, face_focus=True)
     assert result.face_box is None
     assert result.contours
+
 
 def test_face_focus_can_be_disabled():
     image = Image.new("RGB", (160, 160), "white")
@@ -35,7 +39,33 @@ def test_face_focus_can_be_disabled():
     assert result.face_box is None
     assert result.contours
 
+
 def test_equation_model_is_complex_fourier():
-    points = np.array([[0,0],[1,0],[1,1],[0,1]], dtype=float)
+    points = np.array([[0, 0], [1, 0], [1, 1], [0, 1]], dtype=float)
     _, coeffs = fourier_reconstruct(points, harmonics=3)
     assert np.isfinite(coeffs).all()
+
+
+def test_desmos_export_converts_complex_fourier_terms():
+    equations = [
+        {
+            "contour": 7,
+            "terms": [
+                {"frequency_index": 0, "real": 12.5, "imag": 0.0},
+                {"frequency_index": 2, "real": 3.0, "imag": -4.0},
+            ],
+        }
+    ]
+
+    expressions = build_desmos_expressions(equations)
+
+    assert len(expressions) == 1
+    assert expressions[0]["id"] == "mathtrace_contour_7"
+    assert "\\cos" in expressions[0]["latex"]
+    assert "\\sin" in expressions[0]["latex"]
+    assert expressions[0]["parametricDomain"] == {"min": "0", "max": "1"}
+    assert "(-(" in expressions[0]["latex"]
+
+
+def test_desmos_export_skips_empty_contours():
+    assert build_desmos_expressions([{"contour": 0, "terms": []}]) == []
