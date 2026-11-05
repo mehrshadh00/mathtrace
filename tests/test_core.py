@@ -1,4 +1,5 @@
 import numpy as np
+
 from PIL import Image, ImageDraw
 
 from mathtrace.core import equation_text, fourier_reconstruct, render_svg, trace_image
